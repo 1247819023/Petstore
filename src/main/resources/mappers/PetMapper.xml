@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lgj.dao.PetMapper">
+  <resultMap id="BaseResultMap" type="com.lgj.entity.Pet">
+    <id column="pid" jdbcType="INTEGER" property="pid" />
+    <result column="cid" jdbcType="INTEGER" property="cid" />
+    <result column="pname" jdbcType="VARCHAR" property="pname" />
+    <result column="photo_urls" jdbcType="VARCHAR" property="photo_urls" />
+    <result column="tid" jdbcType="INTEGER" property="tid" />
+    <result column="pstatus" jdbcType="VARCHAR" property="pstatus" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from pet
+    where pid = #{pid,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.lgj.entity.Pet">
+    insert into pet (pid, cid, pname, 
+      photo_urls, tid, pstatus
+      )
+    values (#{pid,jdbcType=INTEGER}, #{cid,jdbcType=INTEGER}, #{pname,jdbcType=VARCHAR}, 
+      #{photo_urls,jdbcType=VARCHAR}, #{tid,jdbcType=INTEGER}, #{pstatus,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.lgj.entity.Pet">
+    update pet
+    set cid = #{cid,jdbcType=INTEGER},
+      pname = #{pname,jdbcType=VARCHAR},
+      photo_urls = #{photo_urls,jdbcType=VARCHAR},
+      tid = #{tid,jdbcType=INTEGER},
+      pstatus = #{pstatus,jdbcType=VARCHAR}
+    where pid = #{pid,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select pid, cid, pname, photo_urls, tid, pstatus
+    from pet
+    where pid = #{pid,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select pid, cid, pname, photo_urls, tid, pstatus
+    from pet
+  </select>
+    <select id="findByStatus" resultType="com.lgj.entity.Pet">
+      select pid, cid, pname, photo_urls, tid, pstatus
+    from pet where pstatus = #{pstatus,jdbcType=VARCHAR}
+    </select>
+</mapper>

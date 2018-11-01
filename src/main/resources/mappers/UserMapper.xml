@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lgj.dao.UserMapper">
+    <resultMap id="BaseResultMap" type="com.lgj.entity.User">
+        <id column="uid" jdbcType="INTEGER" property="uid"/>
+        <result column="user_name" jdbcType="VARCHAR" property="user_name"/>
+        <result column="first_name" jdbcType="VARCHAR" property="first_name"/>
+        <result column="last_name" jdbcType="VARCHAR" property="last_name"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="user_status" jdbcType="INTEGER" property="user_status"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user
+    where uid = #{uid,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.lgj.entity.User">
+    insert into user (uid, user_name, first_name, 
+      last_name, email, password, 
+      phone, user_status)
+    values (#{uid,jdbcType=INTEGER}, #{user_name,jdbcType=VARCHAR}, #{first_name,jdbcType=VARCHAR}, 
+      #{last_name,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{user_status,jdbcType=INTEGER})
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="com.lgj.entity.User">
+    update user
+    set user_name = #{user_name,jdbcType=VARCHAR},
+      first_name = #{first_name,jdbcType=VARCHAR},
+      last_name = #{last_name,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      user_status = #{user_status,jdbcType=INTEGER}
+    where uid = #{uid,jdbcType=INTEGER}
+  </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select uid, user_name, first_name, last_name, email, password, phone, user_status
+    from user
+    where uid = #{uid,jdbcType=INTEGER}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select uid, user_name, first_name, last_name, email, password, phone, user_status
+    from user
+  </select>
+    <select id="selectByName" resultType="com.lgj.entity.User">
+       select uid, first_name, last_name, email, password, phone, user_status
+    from user where user_name = #{user_name,jdbcType=VARCHAR}
+    </select>
+    <select id="login" resultType="com.lgj.entity.User">
+       update user
+       set  user_status = #{user_status,jdbcType=INTEGER}
+       where user_name = #{user_name,jdbcType=VARCHAR} and password = #{password,jdbcType=VARCHAR}
+    </select>
+</mapper>

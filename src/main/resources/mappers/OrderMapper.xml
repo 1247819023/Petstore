@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lgj.dao.OrderMapper">
+    <resultMap id="BaseResultMap" type="com.lgj.entity.Order">
+        <id column="oid" jdbcType="INTEGER" property="oid"/>
+        <result column="per_id" jdbcType="INTEGER" property="per_id"/>
+        <result column="qiantity" jdbcType="INTEGER" property="qiantity"/>
+        <result column="ship_date" jdbcType="TIMESTAMP" property="ship_date"/>
+        <result column="ostatus" jdbcType="VARCHAR" property="ostatus"/>
+        <result column="complete" jdbcType="BIT" property="complete"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from order
+    where oid = #{oid,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.lgj.entity.Order">
+    insert into order (oid, per_id, qiantity, 
+      ship_date, ostatus, complete
+      )
+    values (#{oid,jdbcType=INTEGER}, #{per_id,jdbcType=INTEGER}, #{qiantity,jdbcType=INTEGER}, 
+      #{ship_date,jdbcType=TIMESTAMP}, #{ostatus,jdbcType=VARCHAR}, #{complete,jdbcType=BIT}
+      )
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="com.lgj.entity.Order">
+    update order
+    set per_id = #{per_id,jdbcType=INTEGER},
+      qiantity = #{qiantity,jdbcType=INTEGER},
+      ship_date = #{ship_date,jdbcType=TIMESTAMP},
+      ostatus = #{ostatus,jdbcType=VARCHAR},
+      complete = #{complete,jdbcType=BIT}
+    where oid = #{oid,jdbcType=INTEGER}
+  </update>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select oid, per_id, qiantity, ship_date, ostatus, complete
+    from order
+    where oid = #{oid,jdbcType=INTEGER}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select oid, per_id, qiantity, ship_date, ostatus, complete
+    from order
+  </select>
+    <select id="selectByStatus" resultType="com.lgj.entity.Order">
+      select oid, per_id, qiantity, ship_date, complete
+    from order where ostatus = #{ostatus,jdbcType=VARCHAR}
+    </select>
+</mapper>
