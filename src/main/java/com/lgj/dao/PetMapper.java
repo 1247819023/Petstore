@@ -14,5 +14,5 @@ public interface PetMapper {
 
     int updateByPrimaryKey(Pet record);
 
-    Pet findByStatus(int status);
+    Pet findByStatus(String pstatus);
 }

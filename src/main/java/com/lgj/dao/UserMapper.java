@@ -1,6 +1,8 @@
 package com.lgj.dao;
 
 import com.lgj.entity.User;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 public interface UserMapper {
@@ -14,7 +16,7 @@ public interface UserMapper {
 
     int updateByPrimaryKey(User record);
 
-    User selectByName(String name);
+    User selectByName(@Param("user_name") String user_name);
 
-    int login(User user);
+    int login(@Param("user_name") String user_name, @Param("password") String password);
 }

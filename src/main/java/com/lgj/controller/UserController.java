@@ -1,108 +1,113 @@
 package com.lgj.controller;
 
+import com.google.gson.Gson;
 import com.lgj.dao.UserMapper;
-import com.lgj.entity.ApiResponse;
 import com.lgj.entity.User;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 
-@Controller
 @RequestMapping("/user")
+@Controller
 public class UserController {
 
     @Autowired
     private UserMapper userMapper;
 
-    @PostMapping("/create")
-    public ApiResponse create(User user) {
+    @RequestMapping(method = RequestMethod.GET)
+    public String home(){
+        return "login";
+    }
+
+    @RequestMapping(value = "/success")
+    public String index(HttpServletRequest request){
+        String user = (String) request.getSession().getAttribute("user");
+        if(!user.isEmpty())
+            return "user";
+        return "login";
+    }
+
+    @GetMapping("/insertForm")
+    public String insertForm(){
+        return "insertForm";
+    }
+
+    @GetMapping(value = "/login", produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String login(String user_name, String password, HttpServletRequest request){
+        int count = userMapper.login(user_name, password);
+        if(count > 0){
+            request.getSession().setAttribute("user",user_name);
+            return "{\"msg\":\"success\"}";
+        }
+        return "{\"msg\":\"fail\"}";
+    }
+
+    @GetMapping(value = "/logout", produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String logout(HttpServletRequest request, HttpServletResponse response){
+        if(request.getSession().getAttribute("user") != null){
+            request.getSession().removeAttribute("user");
+            try {
+                response.sendRedirect("/user");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return "{\"msg\":\"注销成功\"}";
+    }
+
+    @GetMapping(value = "/findAllUser", produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String findAllUser(){
+        List<User> userList = userMapper.selectAll();
+        return new Gson().toJson(userList);
+    }
+
+    @GetMapping(value = "/finByIdUser", produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String findByIdUser(int userId){
+        User user = userMapper.selectByPrimaryKey(userId);
+        return new Gson().toJson(user);
+    }
+
+    @GetMapping(value = "/findByUserName", produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String findByUserName(String user_name){
+        User user = userMapper.selectByName(user_name);
+        return new Gson().toJson(user);
+    }
+
+    @PostMapping(value = "/addUser", produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String createUser(User user){
         userMapper.insert(user);
-
-        return new ApiResponse("default", "successful operation");
+        return "{\"msg\":\"注册成功\"}";
     }
 
-    @RequestMapping(path = "", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
+    @GetMapping("/updateForm")
+    public String updateForm(Model model, int userId){
+        model.addAttribute("userId", userId);
+        return "updateForm";
+    }
+
+    @PostMapping(value = "/updateUser", produces = "application/json;charset=utf-8")
     @ResponseBody
-    public ApiResponse createWithArray(@RequestBody ArrayList<User> arrayList) {
-        boolean flag = false;
-        for (User user : arrayList) {
-            if (userMapper.insert(user) > 0) {
-                flag = true;
-            }
-        }
-        return new ApiResponse("default", "successful operation");
-    }
-
-    @RequestMapping(path = "", method = RequestMethod.POST, produces = "application/json;charset=utf-8")
-    @ResponseBody
-    public ApiResponse createWithList(@RequestBody List<User> list) {
-        boolean flag = false;
-        for (User user : list) {
-            if (userMapper.insert(user) > 0) {
-                flag = true;
-            }
-        }
-        return new ApiResponse("default", "successful operation");
-    }
-
-    @RequestMapping(method = RequestMethod.GET)
-    public ApiResponse login(User user) {
-        if (userMapper.login(user) != 0) {
-            userMapper.updateByPrimaryKey(user);
-            return new ApiResponse("default", "successful operation");
-        } else {
-            return new ApiResponse(400, "error", "Invalid username/password supplied");
-        }
-    }
-
-    @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
-    public ApiResponse loginout(@SessionAttribute User user) {
+    public String updateUser(User user){
         userMapper.updateByPrimaryKey(user);
-        return new ApiResponse("default", "successful operation");
+        return "{\"msg\":\"修改成功\"}";
     }
 
-    @RequestMapping(method = RequestMethod.GET)
-    public ApiResponse findByName(@PathVariable("name") String name, Model model) {
-        if (name == null){
-            return new ApiResponse(400, "error", "Invalid username supplied");
-        }else {
-            if (userMapper.selectByName(name) != null){
-                return new ApiResponse(200,"default", "successful operation");
-            }else {
-                return new ApiResponse(404, "error", "User not found");
-            }
-        }
-    }
-
-    @RequestMapping(method = RequestMethod.PUT)
-    public ApiResponse update(User user) {
-        if(user.getUid() == null){
-            return new ApiResponse(400, "error", "Invalid username supplied");
-        }else {
-            if (userMapper.updateByPrimaryKey(user) != 0){
-                return new  ApiResponse();
-            }else {
-                return new ApiResponse(404, "error", "User not found");
-            }
-        }
-    }
-
-    @RequestMapping(method = RequestMethod.DELETE)
-    public ApiResponse delece(@PathVariable("uid") int uid) {
-        if(uid == 0){
-            return new ApiResponse(400, "error", "Invalid username supplied");
-        }else {
-            if (userMapper.deleteByPrimaryKey(uid) != 0){
-                return new  ApiResponse();
-            }else {
-                return new ApiResponse(404, "error", "User not found");
-            }
-        }
+    @GetMapping(value = "/deleteUser", produces = "application/json;charset=utf-8")
+    @ResponseBody
+    public String deleteUser(int userId){
+        userMapper.deleteByPrimaryKey(userId);
+        return "{\"msg\":\"删除成功\"}";
     }
 }
